@@ -45,7 +45,12 @@ Bun.serve({
   async fetch(request) {
     const { pathname, search } = new URL(request.url);
 
-    if (pathname.startsWith("/api/")) return proxy(request, pathname, search);
+    // Both the scan and the read go through here, so a tunnelled demo keeps
+    // one origin: the session cookie stays first party and the page runs in a
+    // secure context, which private-browsing detection needs.
+    if (pathname.startsWith("/api/") || pathname.startsWith("/verify/")) {
+      return proxy(request, pathname, search);
+    }
 
     const path = resolve(pathname === "/" ? "/index.html" : pathname);
 
