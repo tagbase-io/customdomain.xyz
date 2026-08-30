@@ -3,6 +3,7 @@ import type { Verification } from "@tagbase-io/verify";
 import Footer from "@/components/Footer";
 import DemoNote from "@/components/DemoNote";
 import Header from "@/components/Header";
+import PrivateBrowsing from "@/components/PrivateBrowsing";
 
 const DemoAction = ({
   children,
@@ -70,6 +71,12 @@ const Counterfeit = ({ verification }: { verification: Verification | null }) =>
           </p>
         </div>
       </div>
+
+      {verification?.incognito && (
+        <div className="mt-8 sm:ml-[76px]">
+          <PrivateBrowsing onDark />
+        </div>
+      )}
 
       <div className="mt-8 flex flex-wrap gap-3 sm:ml-[76px]">
         <DemoAction primary>

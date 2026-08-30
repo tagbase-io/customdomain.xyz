@@ -5,6 +5,7 @@ import Explainer from "@/components/Explainer";
 import Footer from "@/components/Footer";
 import Gallery from "@/components/Gallery";
 import Header from "@/components/Header";
+import PrivateBrowsing from "@/components/PrivateBrowsing";
 import Product from "@/components/Product";
 import Unknown from "@/components/Unknown";
 import Verification from "@/components/Verification";
@@ -36,7 +37,11 @@ const App = () => {
           <Explainer />
         ) : (
           <div className="mx-auto max-w-5xl">
-            <Verification status={status} messages={messages} verificationId={data?.id} />
+            {data?.incognito ? (
+              <PrivateBrowsing verificationId={data.id} />
+            ) : (
+              <Verification status={status} messages={messages} verificationId={data?.id} />
+            )}
 
             {data && (
               <>
