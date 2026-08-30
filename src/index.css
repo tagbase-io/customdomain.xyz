@@ -1,39 +1,37 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    /* Luxury Warm Palette */
-    --background: 40 33% 97%;
-    --foreground: 25 30% 12%;
+    /* Your Brand: warm editorial, matched to the design canvas */
+    --background: 35 33% 96%;
+    --foreground: 20 26% 9%;
 
-    --card: 40 30% 95%;
-    --card-foreground: 25 30% 12%;
+    --card: 40 60% 99%;
+    --card-foreground: 20 26% 9%;
 
-    --popover: 40 33% 97%;
-    --popover-foreground: 25 30% 12%;
+    --popover: 35 33% 96%;
+    --popover-foreground: 20 26% 9%;
 
-    --primary: 25 30% 12%;
-    --primary-foreground: 40 33% 97%;
+    --primary: 20 26% 9%;
+    --primary-foreground: 35 33% 96%;
 
-    --secondary: 35 25% 90%;
-    --secondary-foreground: 25 30% 20%;
+    --secondary: 35 26% 92%;
+    --secondary-foreground: 20 26% 9%;
 
-    --muted: 35 20% 92%;
-    --muted-foreground: 25 15% 45%;
+    --muted: 35 26% 92%;
+    --muted-foreground: 25 15% 37%;
 
-    --accent: 40 60% 50%;
-    --accent-foreground: 25 30% 12%;
+    --accent: 41 59% 42%;
+    --accent-foreground: 35 33% 96%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 35 20% 85%;
-    --input: 35 20% 85%;
-    --ring: 40 60% 50%;
+    --border: 33 26% 85%;
+    --input: 33 26% 85%;
+    --ring: 41 59% 42%;
 
     --radius: 0.25rem;
 
@@ -47,56 +45,40 @@
     --champagne: 45 40% 85%;
 
     /* Typography */
-    --font-display: 'Cormorant Garamond', Georgia, serif;
-    --font-body: 'Inter', system-ui, sans-serif;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --font-display: "Cormorant Garamond", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
   }
 
-  .dark {
-    --background: 25 25% 8%;
-    --foreground: 40 20% 92%;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 30 6% 9%;
+      --foreground: 38 24% 92%;
 
-    --card: 25 22% 12%;
-    --card-foreground: 40 20% 92%;
+      --card: 30 6% 13%;
+      --card-foreground: 38 24% 92%;
 
-    --popover: 25 22% 12%;
-    --popover-foreground: 40 20% 92%;
+      --popover: 30 6% 13%;
+      --popover-foreground: 38 24% 92%;
 
-    --primary: 40 60% 50%;
-    --primary-foreground: 25 25% 8%;
+      --primary: 38 24% 92%;
+      --primary-foreground: 30 6% 9%;
 
-    --secondary: 25 18% 18%;
-    --secondary-foreground: 40 20% 85%;
+      --secondary: 30 6% 17%;
+      --secondary-foreground: 38 24% 88%;
 
-    --muted: 25 15% 20%;
-    --muted-foreground: 35 12% 55%;
+      --muted: 30 6% 17%;
+      --muted-foreground: 32 8% 64%;
 
-    --accent: 40 55% 45%;
-    --accent-foreground: 40 20% 92%;
+      --accent: 41 62% 63%;
+      --accent-foreground: 30 6% 9%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+      --destructive: 0 62.8% 45%;
+      --destructive-foreground: 210 40% 98%;
 
-    --border: 25 15% 22%;
-    --input: 25 15% 22%;
-    --ring: 40 55% 45%;
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+      --border: 30 5% 22%;
+      --input: 30 5% 22%;
+      --ring: 41 62% 63%;
+    }
   }
 }
 
@@ -110,7 +92,12 @@
     font-family: var(--font-body);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     font-weight: 400;
     letter-spacing: -0.02em;
@@ -146,6 +133,21 @@
 
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out forwards;
+  }
+
+  /* A clock that spins reads as broken. It waits instead. */
+  .animate-breathe {
+    animation: breathe 2s ease-in-out infinite;
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.35;
+    }
   }
 
   @keyframes fadeUp {

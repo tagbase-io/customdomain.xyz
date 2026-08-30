@@ -1,73 +1,74 @@
-# Welcome to your Lovable project
+# customdomain.xyz
 
-## Project info
+A demo of TAGBASE verification running on a brand's own domain, and the
+reference consumer of [`@tagbase-io/verify`](../monorepo/packages/verify-js).
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+A customer taps a tag, the chip sends them here with a `?tid=` parameter, and
+this page reads the result behind it. With no `tid` it explains itself and
+points at the docs.
 
-## How can I edit this code?
+Every product detail on the page comes from the API: title, description,
+images, documents. No product is described in this repository.
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+## Running it
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+bun install
+bun run dev          # http://localhost:8080
 ```
 
-**Edit a file directly in GitHub**
+Point it at a local verification server with a `.env` (see `.env.example`):
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```sh
+VITE_TAGBASE_BASE_URL=http://localhost:4002
+```
 
-**Use GitHub Codespaces**
+Then open a URL carrying a real verification id: `http://localhost:8080/?tid=vrf_...`
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Cross-origin reads need CORS on the verification endpoint, which the server
+derives from the product's `redirect_url`. Set that to the origin this page is
+served from, or the browser blocks the response before the page sees it.
 
-## What technologies are used for this project?
+## Deploying
 
-This project is built with:
+`.github/workflows/pages.yml` builds and publishes to GitHub Pages on a push to
+`main`. `public/CNAME` holds the domain and the build copies `index.html` to
+`404.html`, so any path renders the app.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+**The workflow cannot run yet.** `@tagbase-io/verify` is wired in as a local
+`file:` dependency pointing into the monorepo, and that path does not exist on
+a CI runner. Publish the package to npm and change the dependency to a version
+range, then the workflow works as written.
 
-## How can I deploy this project?
+## DNS
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Two records on the same domain, which is what lets the cookies work:
 
-## Can I connect a custom domain to my Lovable project?
+| Host                      | Points at             | Serves               |
+| ------------------------- | --------------------- | -------------------- |
+| `customdomain.xyz`        | GitHub Pages          | this site            |
+| `verify.customdomain.xyz` | `external.tagbase.io` | the verification API |
 
-Yes, you can!
+They share a registrable domain, so a cookie written here is visible there.
+That is what carries the first tap through to the second. Serve the page from
+one domain and the verification host from another and the cookie becomes third
+party, which modern browsers block.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Structure
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```
+src/
+  App.tsx                  one page: explainer, or the result
+  hooks/useVerification.ts the only call to the API
+  components/
+    Explainer.tsx          shown when no tag sent you here
+    Verification.tsx       status and the messages the server sends
+    Gallery.tsx            product images
+    Product.tsx            title, description, tag data
+    Documents.tsx          downloads
+    Header.tsx  Footer.tsx
+```
+
+Four runtime dependencies: `react`, `react-dom`, `lucide-react` for the icons,
+and `@tagbase-io/verify`. Animation is CSS. There is no router, no state library,
+and no component library, because one page needs none of them.

@@ -1,41 +1,69 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Product from "./pages/Product";
-import AuroraVienna from "./pages/AuroraVienna";
-import TwinValleyReserve from "./pages/TwinValleyReserve";
-import LuminancePro from "./pages/LuminancePro";
-import BarcelonaBackpack from "./pages/BarcelonaBackpack";
-import McfBlackCap from "./pages/McfBlackCap";
-import McfShirt2526 from "./pages/McfShirt2526";
-import NotFound from "./pages/NotFound";
+import Counterfeit from "@/components/Counterfeit";
+import DemoNote from "@/components/DemoNote";
+import Documents from "@/components/Documents";
+import Explainer from "@/components/Explainer";
+import Footer from "@/components/Footer";
+import Gallery from "@/components/Gallery";
+import Header from "@/components/Header";
+import Product from "@/components/Product";
+import Unknown from "@/components/Unknown";
+import Verification from "@/components/Verification";
+import { useVerification } from "@/hooks/useVerification";
 
-const queryClient = new QueryClient();
+const App = () => {
+  const { status, messages, data, unknown } = useVerification();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/product/leopard-luxe-city-bag" element={<Product />} />
-          <Route path="/product/aurora-over-vienna" element={<AuroraVienna />} />
-          <Route path="/product/twin-valley-reserve-cabernet-sauvignon" element={<TwinValleyReserve />} />
-          <Route path="/product/luminance-pro-anti-aging-cream-50ml" element={<LuminancePro />} />
-          <Route path="/product/large-barcelona-backpack" element={<BarcelonaBackpack />} />
-          <Route path="/product/mcf-black-cap" element={<McfBlackCap />} />
-          <Route path="/product/shirt2526" element={<McfShirt2526 />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+  if (status === "invalid") return <Counterfeit verification={data} />;
+
+  if (status === "error") {
+    return (
+      <Unknown
+        message={
+          unknown
+            ? "The address does not match a check we have seen. If you have just tapped the tag for the first time, tap it once more and the result will appear here."
+            : (messages[0]?.text ?? "Something went wrong while checking this product.")
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
+
+      <main className="flex-1 px-5 py-8 sm:px-14 sm:py-11">
+        {status === "idle" ? (
+          <Explainer />
+        ) : (
+          <div className="mx-auto max-w-5xl">
+            <Verification status={status} messages={messages} verificationId={data?.id} />
+
+            {data && (
+              <>
+                <div
+                  className={`mt-9 grid gap-8 lg:gap-12 ${data.imageUrls.length > 0 ? "lg:grid-cols-2" : ""}`}
+                >
+                  <Gallery imageUrls={data.imageUrls} title={data.title} />
+                  <Product
+                    title={data.title}
+                    description={data.description}
+                    website={data.website}
+                    data={data.data}
+                  />
+                </div>
+
+                <Documents documents={data.documents} />
+              </>
+            )}
+
+            <DemoNote />
+          </div>
+        )}
+      </main>
+
+      <Footer />
+    </div>
+  );
+};
 
 export default App;

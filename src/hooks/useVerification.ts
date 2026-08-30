@@ -1,82 +1,41 @@
 import { useState, useEffect } from "react";
+import { verify, VerifyError, type Message, type Verification } from "@tagbase-io/verify";
 
-export type VerificationStatus = "idle" | "loading" | "pending" | "valid" | "invalid" | "valid_with_warnings" | "error";
-
-interface VerificationMessage {
-  type: string;
-  text: string;
-}
+// The server's own statuses, plus the three states that only exist in this
+// page: before a tap, during the request, and when the request failed.
+export type VerificationStatus =
+  "idle" | "loading" | "pending" | "valid" | "invalid" | "valid_with_warnings" | "error";
 
 interface ProductData {
   number?: string;
   total?: string;
 }
 
-interface VerificationData {
-  id: string;
-  status: string;
-  title: string;
-  description: string;
-  image_urls: string[];
-  website: string;
-  data: string | ProductData;
-  inserted_at: string;
-  on_device: boolean;
-}
-
-interface VerificationResponse {
-  data: VerificationData;
-  messages: VerificationMessage[];
-}
-
 export interface UseVerificationReturn {
   status: VerificationStatus;
-  messages: VerificationMessage[];
-  data: VerificationData | null;
+  /** Set when the failure was "no such verification" rather than a fault. */
+  unknown: boolean;
+  messages: Message[];
+  data: Verification | null;
   tid: string | null;
   productData: ProductData | null;
 }
 
-const setGeolocationCookie = (latitude: number, longitude: number, accuracy: number) => {
-  const geolocationData = JSON.stringify({ latitude, longitude, accuracy });
-  // Get the domain for the cookie (use current domain without subdomain for broader access)
-  const domain = window.location.hostname;
-  document.cookie = `tagbase_geolocation=${encodeURIComponent(geolocationData)}; path=/; SameSite=Lax; domain=${domain}; max-age=600;`;
-};
-
-const requestGeolocation = () => {
-  if ("geolocation" in navigator) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setGeolocationCookie(
-          position.coords.latitude,
-          position.coords.longitude,
-          position.coords.accuracy
-        );
-      },
-      (error) => {
-        console.log("Geolocation permission denied or unavailable:", error.message);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      }
-    );
-  }
-};
+const BASE_URL = import.meta.env.VITE_TAGBASE_BASE_URL ?? "https://verify.customdomain.xyz";
 
 export const useVerification = (): UseVerificationReturn => {
   const [status, setStatus] = useState<VerificationStatus>("idle");
-  const [messages, setMessages] = useState<VerificationMessage[]>([]);
-  const [data, setData] = useState<VerificationData | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [data, setData] = useState<Verification | null>(null);
   const [tid, setTid] = useState<string | null>(null);
   const [productData, setProductData] = useState<ProductData | null>(null);
+  const [unknown, setUnknown] = useState(false);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     const fetchVerification = async () => {
-      const params = new URLSearchParams(window.location.search);
-      const tidParam = params.get("tid");
+      const tidParam = new URLSearchParams(window.location.search).get("tid");
 
       if (!tidParam) {
         setStatus("idle");
@@ -87,51 +46,44 @@ export const useVerification = (): UseVerificationReturn => {
       setStatus("loading");
 
       try {
-        // Use the custom domain verification endpoint
-        const url = `https://verify.customdomain.xyz/verifications/${tidParam}`;
+        const verification = await verify({ baseUrl: BASE_URL, signal: controller.signal });
 
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            accept: "application/json",
-          },
-          credentials: "include",
-        });
-
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-
-        const json: VerificationResponse = await response.json();
-        
-        setData(json.data);
-        setMessages(json.messages || []);
-
-        // Parse the nested data object if it exists
-        if (json.data.data) {
-          const nestedData = typeof json.data.data === 'string' 
-            ? JSON.parse(json.data.data) 
-            : json.data.data;
-          setProductData(nestedData);
-        }
-
-        // Map the API status to our status type
-        const apiStatus = json.data.status as VerificationStatus;
-        setStatus(apiStatus);
-
-        // If pending, request geolocation for the next scan
-        if (apiStatus === "pending") {
-          requestGeolocation();
-        }
+        setData(verification);
+        setMessages(verification.messages);
+        setProductData(verification.data as ProductData);
+        setStatus(verification.status);
       } catch (error) {
-        console.error("Verification error:", error);
+        if (controller.signal.aborted) return;
+
+        setUnknown(error instanceof VerifyError && error.code === "not_found");
         setStatus("error");
-        setMessages([{ type: "error", text: "Failed to verify product. Please try again." }]);
+        setMessages([{ type: "error", text: explain(error) }]);
       }
     };
 
     fetchVerification();
+
+    return () => controller.abort();
   }, []);
 
-  return { status, messages, data, tid, productData };
+  return { status, messages, data, tid, productData, unknown };
 };
+
+// An unknown tag and an unreachable server are different problems, and telling
+// somebody to try again only helps with one of them.
+function explain(error: unknown): string {
+  if (!(error instanceof VerifyError)) {
+    return "We could not check this product. Please try again.";
+  }
+
+  switch (error.code) {
+    case "not_found":
+      return "We have no record of this tag. Tap it again to complete the check.";
+    case "network":
+      return "We could not reach the verification service. Check your connection and try again.";
+    case "no_id":
+      return "There is no tag in this link to check.";
+    default:
+      return "We could not check this product. Please try again.";
+  }
+}
