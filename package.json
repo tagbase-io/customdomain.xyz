@@ -17,7 +17,7 @@
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "@tagbase-io/verify": "file:../monorepo/main.verify-js-lib/packages/verify-js"
+    "@tagbase-io/verify": "^0.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
