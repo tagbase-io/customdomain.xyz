@@ -100,8 +100,8 @@ const reading = [
 
 const Explainer = () => (
   <div className="mx-auto max-w-3xl animate-fade-up py-16 sm:py-24">
-    <p className="font-body text-[11px] uppercase tracking-[0.2em] text-accent">
-      A TAGBASE demonstration
+    <p className="font-body text-sm leading-relaxed text-muted-foreground">
+      This is a demo of a <Domain /> check.
     </p>
 
     <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
@@ -109,9 +109,9 @@ const Explainer = () => (
     </h1>
 
     <p className="mt-6 font-body text-lg leading-relaxed text-muted-foreground">
-      This is a demo of a TAGBASE check on a site like yours. It takes one script tag and one call,
-      so nothing else about your site has to change. Your coding agent can do it from the brief
-      below in a few minutes.
+      The check runs on a site like yours. It takes one script tag and one call, so nothing else
+      about your site has to change. Your coding agent can do it from the brief below in a few
+      minutes.
     </p>
 
     <p className="mt-4 font-body text-lg leading-relaxed text-muted-foreground">
@@ -236,6 +236,16 @@ const Snippet = ({ text }: { text: string }) => {
     </div>
   );
 };
+
+/** The product this page is a demo of, linked to the docs that explain it. */
+const Domain = () => (
+  <a
+    href={DOCS}
+    className="font-mono text-accent underline decoration-accent/40 underline-offset-4 transition-colors hover:text-[#8a6414] dark:hover:text-[#f0dcae]"
+  >
+    verify.tagbase.io
+  </a>
+);
 
 const Link = ({ href, children }: { href: string; children: string }) => (
   <a
