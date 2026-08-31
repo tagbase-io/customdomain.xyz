@@ -17,9 +17,6 @@ const Footer = ({ onDark = false }: { onDark?: boolean }) => {
         </p>
 
         <nav className="flex flex-wrap gap-x-6 gap-y-2">
-          <a href="/" className={link}>
-            What is this?
-          </a>
           <a href={DOCS} className={link}>
             Documentation
           </a>

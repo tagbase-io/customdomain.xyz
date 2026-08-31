@@ -4,8 +4,8 @@ A demo of TAGBASE verification running on a brand's own domain, and the
 reference consumer of [`@tagbase-io/verify`](../monorepo/packages/verify-js).
 
 A customer taps a tag, the chip sends them here with a `?tid=` parameter, and
-this page reads the result behind it. With no `tid` it explains itself and
-points at the docs.
+this page reads the result behind it. Opened at the root with no `tid`, it
+redirects to the docs; any other path is a not-found page.
 
 Every product detail on the page comes from the API: title, description,
 images, documents. No product is described in this repository.
@@ -35,6 +35,10 @@ served from, or the browser blocks the response before the page sees it.
 `main`. `public/CNAME` holds the domain and the build copies `index.html` to
 `404.html`, so any path renders the app.
 
+Pages serves static files and cannot send a 301, so the redirect off the root
+is an inline script in `index.html`. It skips a URL carrying a `tid`, and skips
+every path but `/`, which is what leaves the not-found page in place.
+
 **The workflow cannot run yet.** `@tagbase-io/verify` is wired in as a local
 `file:` dependency pointing into the monorepo, and that path does not exist on
 a CI runner. Publish the package to npm and change the dependency to a version
@@ -58,10 +62,10 @@ party, which modern browsers block.
 
 ```
 src/
-  App.tsx                  one page: explainer, or the result
+  App.tsx                  one page: the result, or why there is none
   hooks/useVerification.ts the only call to the API
   components/
-    Explainer.tsx          shown when no tag sent you here
+    NotFound.tsx           shown when no tag sent you here
     Verification.tsx       status and the messages the server sends
     Gallery.tsx            product images
     Product.tsx            title, description, tag data

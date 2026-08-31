@@ -22,8 +22,8 @@ const DemoNote = ({ onDark = false }: DemoNoteProps) => {
         verify.tagbase.io
       </a>{" "}
       check can look on your own website.{" "}
-      <a href="/" className={link}>
-        Read how it works
+      <a href={DOCS} className={link}>
+        Read the documentation
       </a>
       .
     </p>

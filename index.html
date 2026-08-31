@@ -3,6 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- GitHub Pages cannot send a 301, so the root redirects here instead. A
+         tap arrives at /?tid=... and falls through to the page below. -->
+    <script>
+      if (location.pathname === "/" && !new URLSearchParams(location.search).has("tid")) {
+        location.replace("https://verify.tagbase.io/docs/your-domain/external-verification");
+      }
+    </script>
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

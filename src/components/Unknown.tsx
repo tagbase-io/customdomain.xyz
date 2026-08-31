@@ -40,10 +40,10 @@ const Unknown = ({ message }: { message: string }) => (
 
         <div className="mt-1 flex gap-6 font-body text-sm">
           <a
-            href="/"
+            href="https://verify.tagbase.io/docs/your-domain/external-verification"
             className="text-accent transition-colors hover:text-[#8a6414] dark:hover:text-[#f0dcae]"
           >
-            What is this?
+            Read the documentation
           </a>
           <a
             href="https://verify.tagbase.io/docs/resources/support"
