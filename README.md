@@ -69,6 +69,8 @@ src/
     Header.tsx  Footer.tsx
 ```
 
-Four runtime dependencies: `react`, `react-dom`, `lucide-react` for the icons,
-and `@tagbase-io/verify`. Animation is CSS. There is no router, no state library,
-and no component library, because one page needs none of them.
+Three runtime dependencies: `react`, `react-dom`, and `lucide-react` for the
+icons. `@tagbase-io/verify` arrives as a script tag in `index.html`, which
+leaves `tagbase.verify` on `window`; it is installed here only for its types.
+Animation is CSS. There is no router, no state library, and no component
+library, because one page needs none of them.

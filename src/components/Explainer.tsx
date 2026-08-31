@@ -10,44 +10,51 @@ const WEBSITE = "https://www.tagbase.io";
 const steps = [
   {
     title: "Your customer taps the tag",
-    body: "A TAGBASE tag sits on the product. Held against a phone, it answers with material it generates on the spot, and sends your customer to your own site with the result's id in the address.",
+    body: "The tag answers the phone with material it makes on the spot. The customer lands on your site, with the id of the result in a ?tid parameter.",
   },
   {
     title: "Your page asks what the tag said",
-    body: "One call to verify(). Back comes the verdict, the product behind that exact tag, its images, its documents, and the words to show your customer.",
+    body: "One call to verify(). You get the verdict, the product on that tag, its pictures, its documents, and the words to show the customer.",
   },
   {
     title: "The second tap settles it",
-    body: "One tap proves the material is valid. A second tap proves it is new, which a copied tag cannot manage. That is why the first tap reads pending rather than authentic.",
+    body: "The first tap proves the material is valid. The second proves it is new, which a copy cannot do. That is why the first tap reads pending.",
   },
 ];
 
 const PROMPT = `Add TAGBASE product verification to this site.
 
-1. Install the client: npm install @tagbase-io/verify
-2. Build the page a tag sends people to. It calls verify({ baseUrl })
-   from '@tagbase-io/verify', where baseUrl is the subdomain pointed
+1. Load the client with one script tag. There is nothing to install:
+   <script src="https://cdn.jsdelivr.net/npm/@tagbase-io/verify"></script>
+   It puts verify and VerifyError on window.tagbase.
+2. Build the page the tag sends people to. Call
+   tagbase.verify({ baseUrl }), where baseUrl is the subdomain pointed
    at TAGBASE, for example https://verify.example.com. The tag puts
-   the result's id in the ?tid query parameter and verify() reads it.
-3. Render what comes back: result.status, result.messages (the words
-   to show the customer), result.title, result.description,
-   result.imageUrls, result.data and result.documents.
-4. Cover all four statuses. 'pending' asks for a second tap. 'valid'
+   the id of the result in the ?tid parameter and verify() reads it.
+3. Show what comes back: result.status, result.messages (the words for
+   the customer), result.title, result.description, result.imageUrls,
+   result.data and result.documents.
+4. Write all four statuses. 'pending' asks for a second tap. 'valid'
    and 'valid_with_warnings' show the product. 'invalid' warns the
    customer that the item may be a copy.
-5. Catch VerifyError. Its code is 'no_id', 'not_found', 'network'
-   or 'server'. Write a page for a tag we have no record of.
-
-This page is a working example. Read its source at
-https://github.com/tagbase-io/customdomain.xyz for a complete
-implementation of every status.
+5. Catch VerifyError. Its code is 'no_id', 'not_found', 'network' or
+   'server'. Write a page for a tag we have no record of.
 
 Read https://verify.tagbase.io/docs/your-domain/external-verification
-before you start.`;
+first. This page does all of it, and its source is at
+https://github.com/tagbase-io/customdomain.xyz.`;
 
-const CODE = `npm install @tagbase-io/verify`;
+const SCRIPT = `<script src="https://cdn.jsdelivr.net/npm/@tagbase-io/verify"></script>`;
 
-const USAGE = `import { verify, VerifyError } from '@tagbase-io/verify'
+const IMPORT_MAP = `<script type="importmap">
+  {
+    "imports": {
+      "@tagbase-io/verify": "https://esm.sh/@tagbase-io/verify"
+    }
+  }
+</script>`;
+
+const USAGE = `const { verify, VerifyError } = tagbase
 
 try {
   const result = await verify({ baseUrl: 'https://verify.yoursite.com' })
@@ -66,27 +73,27 @@ try {
 const reading = [
   {
     title: "How TAGBASE works",
-    body: "What the chip answers with, and why a copy cannot pass the second tap.",
+    body: "What the tag answers with, and why a copy fails the second tap.",
     href: HOW_IT_WORKS,
   },
   {
     title: "Verification on your own domain",
-    body: "The guide behind this page. Setting up the CNAME, and what every status means.",
+    body: "The CNAME, the four statuses, and the errors to catch.",
     href: DOCS,
   },
   {
     title: "This page on GitHub",
-    body: "The full source, including the pages for a failed check and an unknown tag.",
+    body: "The full source, down to the failed check and the unknown tag.",
     href: REPO,
   },
   {
     title: "@tagbase-io/verify on npm",
-    body: "The client itself. It is one function, and it pulls in nothing you have to maintain.",
+    body: "The client itself, if you would rather install it than load it.",
     href: NPM,
   },
   {
     title: "tagbase.io",
-    body: "What TAGBASE is, and how to get tags for your own products.",
+    body: "What TAGBASE is, and how to get tags for your products.",
     href: WEBSITE,
   },
 ];
@@ -98,18 +105,18 @@ const Explainer = () => (
     </p>
 
     <h1 className="mt-4 font-display text-4xl leading-tight sm:text-5xl">
-      Put proof of authenticity on the site you already own.
+      Add TAGBASE to your website.
     </h1>
 
     <p className="mt-6 font-body text-lg leading-relaxed text-muted-foreground">
-      customdomain.xyz demonstrates a TAGBASE check running on a brand&rsquo;s own domain. Your
-      Brand stands in for yours, so you can see what a customer meets after tapping a tag, and read
-      the code that puts it there.
+      This is a demo of a TAGBASE check on a site like yours. It takes one script tag and one
+      call, so nothing else about your site has to change. Your coding agent can do it from the
+      brief below in a few minutes.
     </p>
 
     <p className="mt-4 font-body text-lg leading-relaxed text-muted-foreground">
-      You arrived without tapping a tag, so there is nothing to check. Here is what happens when
-      somebody does.
+      You came here without tapping a tag, so there is nothing to check. This is what a customer
+      gets when they do.
     </p>
 
     <ol className="mt-12 space-y-8">
@@ -133,8 +140,8 @@ const Explainer = () => (
       <h2 className="font-display text-2xl sm:text-[26px]">Hand it to your coding agent</h2>
 
       <p className="mt-2 font-body leading-relaxed text-muted-foreground">
-        Copy the brief below into Claude Code, Cursor or whatever you build with, and let it write
-        the page against your own site.
+        Copy this into Claude Code, Cursor, or whatever you build with. It writes the page against
+        your site.
       </p>
 
       <Snippet text={PROMPT} />
@@ -144,27 +151,33 @@ const Explainer = () => (
       <h2 className="font-display text-2xl sm:text-[26px]">Or write it yourself</h2>
 
       <p className="mt-2 font-body leading-relaxed text-muted-foreground">
-        Point a subdomain of your site at TAGBASE, so the check runs on your domain rather than
-        ours. You will find the CNAME in your dashboard. Then install the client:
+        First point a subdomain of your site at TAGBASE. The CNAME is in your dashboard. Then load
+        the client. One script tag, nothing to install, and it gives you tagbase.verify. This page
+        loads it that way:
       </p>
 
-      <Snippet text={CODE} />
+      <Snippet text={SCRIPT} />
 
       <p className="mt-6 font-body leading-relaxed text-muted-foreground">
-        On the page the tag sends people to, ask what the tag said and render the answer. The page
-        you are looking at is one call and a handful of components.
+        Call it on the page the tag sends people to, then show the answer:
       </p>
 
       <Snippet text={USAGE} />
 
       <p className="mt-6 font-body leading-relaxed text-muted-foreground">
-        This whole page is on GitHub. If you would rather see how a real page handles each status
-        than read about it, <Link href={REPO}>read the source</Link>.
+        If your page imports by name, point an import map at the same client:
+      </p>
+
+      <Snippet text={IMPORT_MAP} />
+
+      <p className="mt-6 font-body leading-relaxed text-muted-foreground">
+        This page is on GitHub with all four statuses written out.{" "}
+        <Link href={REPO}>Read the source</Link>.
       </p>
     </section>
 
     <section className="mt-20">
-      <h2 className="font-display text-2xl sm:text-[26px]">If you want to go deeper</h2>
+      <h2 className="font-display text-2xl sm:text-[26px]">Read more</h2>
 
       <ul className="-mx-4 mt-5 border-t border-border">
         {reading.map((item) => (

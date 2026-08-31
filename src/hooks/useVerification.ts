@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
-import { verify, VerifyError, type Message, type Verification } from "@tagbase-io/verify";
+import type { Message, Verification } from "@tagbase-io/verify";
+
+// The client arrives as a script tag in index.html, which leaves it on window
+// rather than in the bundle.
+const { verify, VerifyError } = window.tagbase;
 
 // The server's own statuses, plus the three states that only exist in this
 // page: before a tap, during the request, and when the request failed.
