@@ -109,9 +109,9 @@ const Explainer = () => (
     </h1>
 
     <p className="mt-6 font-body text-lg leading-relaxed text-muted-foreground">
-      This is a demo of a TAGBASE check on a site like yours. It takes one script tag and one
-      call, so nothing else about your site has to change. Your coding agent can do it from the
-      brief below in a few minutes.
+      This is a demo of a TAGBASE check on a site like yours. It takes one script tag and one call,
+      so nothing else about your site has to change. Your coding agent can do it from the brief
+      below in a few minutes.
     </p>
 
     <p className="mt-4 font-body text-lg leading-relaxed text-muted-foreground">
