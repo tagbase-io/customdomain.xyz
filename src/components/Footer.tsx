@@ -9,9 +9,9 @@ const Footer = ({ onDark = false }: { onDark?: boolean }) => {
 
   return (
     <footer
-      className={`mt-auto border-t px-5 py-5 sm:px-14 ${onDark ? "border-[#3a1c24]" : "border-border"}`}
+      className={`mt-auto border-t px-5 sm:px-14 ${onDark ? "border-[#3a1c24]" : "border-border"}`}
     >
-      <div className="flex flex-col gap-3 font-body text-xs sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex max-w-5xl flex-col gap-3 py-5 font-body text-xs sm:flex-row sm:items-center sm:justify-between">
         <p className={onDark ? "text-[#a9808c]" : "text-muted-foreground"}>
           &copy; {new Date().getFullYear()} TAGBASE. A demonstration page.
         </p>
