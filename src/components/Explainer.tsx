@@ -92,7 +92,7 @@ const reading = [
 ];
 
 const Explainer = () => (
-  <div className="max-w-3xl animate-fade-up py-16 sm:py-24">
+  <div className="mx-auto max-w-3xl animate-fade-up py-16 sm:py-24">
     <p className="font-body text-[11px] uppercase tracking-[0.2em] text-accent">
       A TAGBASE demonstration
     </p>
@@ -117,7 +117,7 @@ const Explainer = () => (
         <li key={step.title} className="flex gap-5">
           <span
             aria-hidden
-            className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border font-body text-xs text-muted-foreground"
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border font-body text-xs text-muted-foreground"
           >
             {index + 1}
           </span>
