@@ -20,7 +20,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@tagbase-io/verify": "^0.1.0",
+    "@tagbase-io/verify": "^0.3.0",
     "@eslint/js": "^9.32.0",
     "@types/node": "^22.16.5",
     "@types/react": "^18.3.23",
