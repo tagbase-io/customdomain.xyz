@@ -8,7 +8,7 @@ interface ProductProps {
 }
 
 const Product = ({ title, description, website, data }: ProductProps) => {
-  const details = [...edition(data), ...Object.entries(data).filter(printable)];
+  const details = [...edition(data), ...rows(data)];
 
   return (
     <div>
@@ -22,9 +22,7 @@ const Product = ({ title, description, website, data }: ProductProps) => {
         <dl className="mt-8 divide-y divide-border border-y border-border">
           {details.map(([key, value]) => (
             <div key={key} className="flex justify-between gap-6 py-3">
-              <dt className="font-body text-sm tracking-wide text-muted-foreground">
-                {label(key)}
-              </dt>
+              <dt className="font-body text-sm tracking-wide text-muted-foreground">{key}</dt>
               <dd className="font-body text-sm">{String(value)}</dd>
             </div>
           ))}
@@ -58,10 +56,23 @@ function edition(data: Record<string, unknown>): [string, string][] {
   return [["Edition", `${number} of ${total}`]];
 }
 
-// A tag carries whatever the brand put on it, so anything nested or empty is
-// not something to print in a two-column list.
-function printable([key, value]: [string, unknown]): boolean {
-  return !["number", "total"].includes(key) && scalar(value);
+// A tag carries whatever the brand put on it. A nested object, such as a
+// distributor with a name and a country, unfolds into one row per value, and
+// anything empty stays out of the list.
+function rows(data: Record<string, unknown>, prefix: string[] = []): [string, string][] {
+  return Object.entries(data).flatMap(([key, value]): [string, string][] => {
+    if (prefix.length === 0 && ["number", "total"].includes(key)) return [];
+    if (scalar(value)) return [[label([...prefix, key]), text(value)]];
+    if (value && typeof value === "object" && !Array.isArray(value)) {
+      return rows(value as Record<string, unknown>, [...prefix, key]);
+    }
+    return [];
+  });
+}
+
+function text(value: unknown): string {
+  if (typeof value === "boolean") return value ? "Yes" : "No";
+  return String(value);
 }
 
 function scalar(value: unknown): boolean {
@@ -72,9 +83,14 @@ function scalar(value: unknown): boolean {
   );
 }
 
-function label(key: string): string {
-  const words = key.replace(/[_-]+/g, " ").trim();
-  return words.charAt(0).toUpperCase() + words.slice(1);
+// `distributor.country` reads as "Distributor Country".
+function label(keys: string[]): string {
+  return keys
+    .join(" ")
+    .split(/[_\-\s]+/)
+    .filter(Boolean)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 export default Product;
