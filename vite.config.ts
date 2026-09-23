@@ -6,6 +6,8 @@ export default defineConfig({
   server: {
     host: "::",
     port: 8080,
+    // A phone on the same network reaches the page under the Mac's name.
+    allowedHosts: [".local"],
   },
   plugins: [react()],
   resolve: {
