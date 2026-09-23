@@ -36,7 +36,7 @@ export const useVerification = (): UseVerificationReturn => {
   const [tid, setTid] = useState<string | null>(null);
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [unknown, setUnknown] = useState(false);
-  const [code, setCode] = useState<string | null>(null);
+  const [code, setCode] = useState<VerifyErrorCode | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
