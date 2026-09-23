@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Message, Verification, VerifyErrorCode } from "@tagbase-io/verify";
+import type { Message, Verification } from "@tagbase-io/verify";
 
 // The client arrives as a script tag in index.html, which leaves it on window
 // rather than in the bundle.
@@ -20,7 +20,7 @@ export interface UseVerificationReturn {
   /** Set when the failure was "no such verification" rather than a fault. */
   unknown: boolean;
   /** The client's error code when the check failed, null otherwise. */
-  code: VerifyErrorCode | null;
+  code: string | null;
   messages: Message[];
   data: Verification | null;
   tid: string | null;
@@ -36,7 +36,7 @@ export const useVerification = (): UseVerificationReturn => {
   const [tid, setTid] = useState<string | null>(null);
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [unknown, setUnknown] = useState(false);
-  const [code, setCode] = useState<VerifyErrorCode | null>(null);
+  const [code, setCode] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -84,7 +84,8 @@ function explain(error: unknown): string {
     return "We could not check this product. Please try again.";
   }
 
-  switch (error.code) {
+  // Read as a string so a client older than the codes below still type-checks.
+  switch (error.code as string) {
     case "not_found":
       return "We have no record of this tag. Tap it again to complete the check.";
     case "network":
