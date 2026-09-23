@@ -5,7 +5,15 @@ import Header from "@/components/Header";
  * Shown when the address names no verification we hold, and when the check
  * could not be made at all. Neither is a verdict on the product.
  */
-const Unknown = ({ message }: { message: string }) => (
+const Unknown = ({
+  title = "We could not check this product",
+  message,
+  hint = "If it keeps happening, the tag may not be one of ours.",
+}: {
+  title?: string;
+  message: string;
+  hint?: string | null;
+}) => (
   <div className="flex min-h-screen flex-col bg-background">
     <Header />
 
@@ -28,15 +36,13 @@ const Unknown = ({ message }: { message: string }) => (
           <path d="M12 16.2h.01" />
         </svg>
 
-        <h1 className="font-display text-[34px] leading-tight sm:text-[40px]">
-          We have no record of this tag
-        </h1>
+        <h1 className="font-display text-[34px] leading-tight sm:text-[40px]">{title}</h1>
 
         <p className="font-body text-[15px] leading-relaxed text-muted-foreground">{message}</p>
 
-        <p className="font-body text-[15px] leading-relaxed text-muted-foreground">
-          If it keeps happening, the tag may not be one of ours.
-        </p>
+        {hint && (
+          <p className="font-body text-[15px] leading-relaxed text-muted-foreground">{hint}</p>
+        )}
 
         <div className="mt-1 flex gap-6 font-body text-sm">
           <a

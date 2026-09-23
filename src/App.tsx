@@ -12,15 +12,22 @@ import Verification from "@/components/Verification";
 import { useVerification } from "@/hooks/useVerification";
 
 const App = () => {
-  const { status, messages, data, unknown } = useVerification();
+  const { status, messages, data, unknown, code } = useVerification();
 
   if (status === "idle") return <NotFound />;
 
   if (status === "invalid") return <Counterfeit verification={data} />;
 
+  if (status === "error" && code === "location_required") {
+    return (
+      <Unknown title="Location access is needed" message={messages[0]?.text ?? ""} hint={null} />
+    );
+  }
+
   if (status === "error") {
     return (
       <Unknown
+        title={unknown ? "We have no record of this tag" : "We could not check this product"}
         message={
           unknown
             ? "The address does not match a check we have seen. If you have just tapped the tag for the first time, tap it once more and the result will appear here."

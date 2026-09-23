@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Message, Verification } from "@tagbase-io/verify";
+import type { Message, Verification, VerifyErrorCode } from "@tagbase-io/verify";
 
 // The client arrives as a script tag in index.html, which leaves it on window
 // rather than in the bundle.
@@ -19,6 +19,8 @@ export interface UseVerificationReturn {
   status: VerificationStatus;
   /** Set when the failure was "no such verification" rather than a fault. */
   unknown: boolean;
+  /** The client's error code when the check failed, null otherwise. */
+  code: VerifyErrorCode | null;
   messages: Message[];
   data: Verification | null;
   tid: string | null;
@@ -34,6 +36,7 @@ export const useVerification = (): UseVerificationReturn => {
   const [tid, setTid] = useState<string | null>(null);
   const [productData, setProductData] = useState<ProductData | null>(null);
   const [unknown, setUnknown] = useState(false);
+  const [code, setCode] = useState<VerifyErrorCode | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -60,6 +63,7 @@ export const useVerification = (): UseVerificationReturn => {
         if (controller.signal.aborted) return;
 
         setUnknown(error instanceof VerifyError && error.code === "not_found");
+        setCode(error instanceof VerifyError ? error.code : null);
         setStatus("error");
         setMessages([{ type: "error", text: explain(error) }]);
       }
@@ -70,7 +74,7 @@ export const useVerification = (): UseVerificationReturn => {
     return () => controller.abort();
   }, []);
 
-  return { status, messages, data, tid, productData, unknown };
+  return { status, messages, data, tid, productData, unknown, code };
 };
 
 // An unknown tag and an unreachable server are different problems, and telling
@@ -87,6 +91,8 @@ function explain(error: unknown): string {
       return "We could not reach the verification service. Check your connection and try again.";
     case "no_id":
       return "There is no tag in this link to check.";
+    case "location_required":
+      return "This product only shows a result with your location. Allow location access for this site, then reload the page.";
     default:
       return "We could not check this product. Please try again.";
   }
